@@ -1,0 +1,14 @@
+# Secrets — never commit
+secrets.json
+.env
+*.key
+
+# Cache
+scrape_cache.json
+__pycache__/
+*.pyc
+
+# Editor / OS
+.DS_Store
+.vscode/
+.idea/
