@@ -378,9 +378,24 @@ def score_event_with_llm(event: dict, llm_client=None, llm_provider: str = 'gemi
     raw_text = None
     try:
         if llm_provider == 'gemini' and llm_client is not None:
+            import google.generativeai.types as glm
             response = llm_client.generate_content(
                 prompt,
-                generation_config={'temperature': 0.3, 'max_output_tokens': 300},
+                generation_config=genai.GenerationConfig(
+                    temperature=0.2,
+                    max_output_tokens=300,
+                    response_mime_type='application/json',
+                    response_schema={
+                        'type': 'OBJECT',
+                        'properties': {
+                            'score':  {'type': 'INTEGER'},
+                            'attend': {'type': 'BOOLEAN'},
+                            'reason': {'type': 'STRING'},
+                            'top_hosts': {'type': 'ARRAY', 'items': {'type': 'STRING'}},
+                        },
+                        'required': ['score', 'attend', 'reason'],
+                    }
+                ),
             )
             raw_text = response.text.strip()
         elif llm_provider == 'claude' and llm_client is not None:
