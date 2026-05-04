@@ -278,7 +278,8 @@
 
         <div class="subscribed-msg" id="subscribed-msg">
           <h3>✅ You're subscribed!</h3>
-          <p>Check your inbox — your first digest is on its way.</p>
+          <p>Your first digest is on its way — check your inbox now.<br>
+          <span style="font-size:12px;opacity:0.8">You'll also get the weekly digest every Monday at 8am.</span></p>
         </div>
       </div>
 
@@ -294,7 +295,7 @@
 
   <script>
     const ALL_EVENTS = JSON.parse(document.getElementById('events-data').textContent);
-    const TOP_N = 3;
+    const TOP_N = 10;
     let userState = {};
 
     // ── Chip toggle ────────────────────────────────
@@ -450,16 +451,28 @@
       };
 
       const SCRIPT_URL = 'REPLACE_WITH_APPS_SCRIPT_URL';
-      if (SCRIPT_URL && SCRIPT_URL !== 'REPLACE_WITH_APPS_SCRIPT_URL') {
+
+      // Submit to backend (adds to sheet + sends immediate email)
+      const submitToBackend = () => {
+        if (!SCRIPT_URL || SCRIPT_URL === 'REPLACE_WITH_APPS_SCRIPT_URL') return;
         fetch(SCRIPT_URL, {
           method: 'POST', mode: 'no-cors',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(payload),
         }).catch(() => {});
-      }
+      };
 
-      document.getElementById('subscribe-form-wrap').style.display = 'none';
-      document.getElementById('subscribed-msg').style.display = 'block';
+      const btn = document.getElementById('subscribe-btn');
+      btn.disabled = true;
+      btn.textContent = 'Sending…';
+
+      submitToBackend();
+
+      // Small delay so it feels like it's working
+      setTimeout(() => {
+        document.getElementById('subscribe-form-wrap').style.display = 'none';
+        document.getElementById('subscribed-msg').style.display = 'block';
+      }, 800);
     });
 
     // ── Reset ──────────────────────────────────────
